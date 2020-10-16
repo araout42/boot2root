@@ -86,10 +86,37 @@ $cd ft_fun
 
 we have thons of .pcap files
 
+when we cat all files , we see that most of them contains the function "useless"
+but some have the function getme()
 
+$grep getme *
+
+we can see getme1, getme2, getme3....
+when we cat the files they are not the full function but instead the file number with the rest of the function
+"//fileXXX"
+
+so with this we can rebuild the program and get the password : Iheartpwnage
+
+we also seen this line : 	printf("Now SHA-256 it and submit");
+
+ssh -> laurie:330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4
+
+when we do ls there is a binary called Bomb
 
 
 phase_1 : Public speaking is very easy.
+these asm Insctruction, we have passwordssphrase in 0x80497c0
+   0x08048b2c <+12>:	push   $0x80497c0
+   0x08048b31 <+17>:	push   %eax
+   0x08048b32 <+18>:	call   0x8049030 <strings_not_equal>
+
+(gdb) x/s 0x80497c0
+0x80497c0:	 "Public speaking is very easy."
+
+Answer : Public speaking is very easy.
+
+
+
 phase_2 :    0x08048b63 <+27>:    cmpl   $0x1,-0x18(%ebp)
 			(gdb) *((int*)($ebp-0x18))=1
 				1
@@ -103,10 +130,12 @@ $52 = 4
 
 we see func red_six_number so we have to input 6 number
 
-by looking at the comparison one by one we can the the numbers are : 1 2 6 120 720
+   0x08048b7e <+54>:	cmp    %eax,(%esi,%ebx,4)
+   0x08048b81 <+57>:	je     0x8048b88 <phase_2+64>
 
+by looking at the comparison one by one we can the the numbers are : 1 2 6 24 120 720
 
-answer : 1 2 6 120 720
+answer : 1 2 6 24 120 720
 
 phase_3 : 
 we have our input stocked in  :	-0x4(%ebp)
@@ -145,6 +174,8 @@ and $bl will be = 98 (character 'b')
 with jump 2 the answer is : 2 b 755
 with the jump 1 the answer is : 1 b 214
 
+
+
 phase_4 : we know we have 1 argument    
 	0x08048cfe <+30>:    cmp    $0x1,%eax
 
@@ -156,6 +187,7 @@ so i did with 1, 2, 3, 4, 5, 6, 7, 8, 9
 and it worked at 9
 
 solution : 9
+
 
 
 phase_5 : by looking at the code we need to match the string "giants"
@@ -183,21 +215,93 @@ so e->a
 the answer is  "opekma"
 
 
+phase_6 :
+we have    0x08048db3 <+27>:	call   0x8048fd8 <read_six_numbers>
+on round 6 we need 6 int argument
+
+the code check if the numbers are between 1 and 6
+then it check that the numbers typed don't repeat then it will check the order
+
+so we test all possibility until it work
+
+we cant test numbers one by one with this comp 
+=> 0x08048e75 <+221>:	cmp    (%edx),%eax
+   0x08048e77 <+223>:	jge    0x8048e7e <phase_6+230>
+
+with input : 1 2 3 4 5 6 the bomb explode at the first Comp
+			 2 4 3 5 6 1 same
+			 3 2 1 4 5 6 same
+			 4 3 2 1 5 6 here we pass the first test ! we know the first number is 4
+
+
+			 doing that for every numbers we have the solution : 4 2 6 3 1 5
+
+afte some research i managed to get the final thor assword :
+
+Publicspeakingisveryeasy.126241207201b2149opekmq426135
 
 
 
-Publicspeakingisveryeasy.126241207202b7559opekma426315
+after connecting to thor
+
+we see a file called turtle with directions indication, the is for the well known Turtle lign drawer
+
+so we use this python script : 
+
+from turtle import *
+color('red', 'yellow')
+begin_fill()
+i = 0
+speed(10)
+while True:
+    left(90)
+    forward(51)
+    while (i < 180):
+        left(1)
+        forward(1)
+        i = i + 1
+    i = 0
+    while (i < 180):
+        right(1)
+        forward(1)
+        i = i + 1
+    forward(260)
+    backward(210)
+    right(90)
+    forward(120)
+    right(10)
+    forward(200)
+    right(150)
+    forward(200)
+    backward(100)
+    right(120)
+    forward(50)
+    left(90)
+    forward(51)
+    i = 0
+    while (i < 180):
+        left(1)
+        forward(1)
+        i = i + 1
+    i = 0
+    while (i < 180):
+        right(1)
+        forward(1)
+        i = i + 1
+    forward(150)
+    backward(200)
+    forward(100)
+    right(90)
+    forward(100)
+    right(90)
+    forward(100)
+    backward(200)
+end_fill()
+done()
 
 
+and the turltle draw the word SLASH of course its not the password
+the challenge say we have to "digest the password"
+so we will hash the password with 'Message digest5' (MD5)
 
-'generic'
-'nobody'
-
-phase_6 :  austinpowers
-
-
-irveabpnutfg
-hbsfev
-whogiants
-
-
+MD5 slash -> 646da671ca01bb5d84dbb5fb2238dc8e
