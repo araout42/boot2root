@@ -86,3 +86,118 @@ $cd ft_fun
 
 we have thons of .pcap files
 
+
+
+
+phase_1 : Public speaking is very easy.
+phase_2 :    0x08048b63 <+27>:    cmpl   $0x1,-0x18(%ebp)
+			(gdb) *((int*)($ebp-0x18))=1
+				1
+			(gdb)p *((int*)(($esi+$ebx*4)))
+					$11 = 134518720
+=> 0x08048b7e <+54>:    cmp    %eax,(%esi,%ebx,4)
+(gdb) p ($esi,$ebx,4)
+$51 = 4
+(gdb) p $eax=4
+$52 = 4
+
+we see func red_six_number so we have to input 6 number
+
+by looking at the comparison one by one we can the the numbers are : 1 2 6 120 720
+
+
+answer : 1 2 6 120 720
+
+phase_3 : 
+we have our input stocked in  :	-0x4(%ebp)
+								-0x5(%ebp)
+								-0xc(%ebp)
+sscanf format string %d %c %d
+
+input : 1 k 3
+(gdb) x/c $ebp-0x5
+0xbffff713:     107 'k'
+
+(gdb) x/d $ebp-0x4
+0xbffff714:     3
+
+(gdb) xd $ebp-0xc
+0xbffff70c:     1
+
+this comp : =>	0x08048bc9 <+49>:    cmpl   $0x7,-0xc(%ebp)
+				0x08048bcd <+53>:    ja     0x8048c88 <phase_3+240>
+
+mean first number has to be < 7
+
+this jump will jump according to first argument -0xc(%ebp)
+   0x08048bd3 <+59>:    mov    -0xc(%ebp),%eax
+   0x08048bd6 <+62>:    jmp    *0x80497e8(,%eax,4)
+
+with jump 1 we have to match last number = 0xd6 (214)
+=> 0x08048c02 <+106>:   cmpl   $0xd6,-0x4(%ebp)
+   0x08048c09 <+113>:   je     0x8048c8f <phase_3+247>
+
+with jump 2 we have to match last number = 0x2f3 (755)
+and $bl will be = 98 (character 'b')
+	0x08048c16 <+126>:   mov    $0x62,%bl
+	0x08048c18 <+128>:   cmpl   $0x2f3,-0x4(%ebp)
+
+with jump 2 the answer is : 2 b 755
+with the jump 1 the answer is : 1 b 214
+
+phase_4 : we know we have 1 argument    
+	0x08048cfe <+30>:    cmp    $0x1,%eax
+
+we have to input a number
+by looking at the code we see func4 is recursive function it will iterate depending on our input
+i tryed high number like 999 255 and it loop infinitly
+so i did with 1, 2, 3, 4, 5, 6, 7, 8, 9
+
+and it worked at 9
+
+solution : 9
+
+
+phase_5 : by looking at the code we need to match the string "giants"
+but when we type giants it is transformed to "hbsfev"
+
+(gdb) x/s 0x804980b
+0x804980b:       "giants"
+
+x/s $esi
+0x804b220 <array.123>:   "isrveawhobpnutfg\260\001"
+
+when we input "isrvea" we get -> "bvrwas"
+			  "whobpn" we get -> "hogrif"
+			  "utfgis" we get -> "aewhbv"
+			  "cdgjkl" we get -> "vehpnu"
+			  "mqtxyz" we get -> "tseobp"
+
+so e->a
+   a->s
+   o->g
+   p->i
+   k->n
+   m->t
+
+the answer is  "opekma"
+
+
+
+
+
+Publicspeakingisveryeasy.126241207202b7559opekma426315
+
+
+
+'generic'
+'nobody'
+
+phase_6 :  austinpowers
+
+
+irveabpnutfg
+hbsfev
+whogiants
+
+
