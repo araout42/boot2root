@@ -2,7 +2,7 @@ Startup script exploit:
 
 At the Vm's Startup we decide to change how to boot the VM
 
-Zhen the vm start  hit key :
+When the vm start  hit key :
     
     ctr+alt+f1
     boot: live init=/bin/sh
